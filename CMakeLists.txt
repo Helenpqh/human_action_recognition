@@ -117,16 +117,15 @@ catkin_package(
 
 ADD_SUBDIRECTORY(${PROJECT_SOURCE_DIR}/libs/shared/hCRF hCRF)
 INCLUDE_DIRECTORIES(${hCRF_SOURCE_DIR}/include)
-ADD_EXECUTABLE("hcrfTest" "src/main.cpp")
+
 LINK_DIRECTORIES(${hCRF_BINARY_DIR}/lib)
-TARGET_LINK_LIBRARIES("hcrfTest"  hCRF)
 
-TARGET_LINK_LIBRARIES("hcrfTest"  cgDescent)
-
-# FIND_LIBRARY(LIB_VAR3 "lbfgs" "../../libs/3rdParty/liblbfgs/lib/.libs/")
-TARGET_LINK_LIBRARIES("hcrfTest"  lbfgs)
-# FIND_LIBRARY(LIB_VAR5 "uncoptim" "../../libs/3rdParty/uncOptim/lib")
-TARGET_LINK_LIBRARIES("hcrfTest"  uncoptim)
+add_executable(activity_rec src/activity_rec.cpp)
+Target_link_libraries(activity_rec ${catkin_LIBRARIES})
+TARGET_LINK_LIBRARIES(activity_rec  hCRF)
+TARGET_LINK_LIBRARIES(activity_rec  cgDescent)
+TARGET_LINK_LIBRARIES(activity_rec  lbfgs)
+TARGET_LINK_LIBRARIES(activity_rec  uncoptim)
 
 ## Declare a C++ library
 # add_library(ML_HCRF
@@ -197,9 +196,3 @@ TARGET_LINK_LIBRARIES("hcrfTest"  uncoptim)
 
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
-add_executable(activity_rec src/activity_rec.cpp)
-target_link_libraries(activity_rec ${catkin_LIBRARIES})
-TARGET_LINK_LIBRARIES(activity_rec  hCRF)
-TARGET_LINK_LIBRARIES(activity_rec  cgDescent)
-TARGET_LINK_LIBRARIES(activity_rec  lbfgs)
-TARGET_LINK_LIBRARIES(activity_rec  uncoptim)
