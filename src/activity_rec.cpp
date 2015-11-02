@@ -93,16 +93,10 @@ int main(int argc, char** argv)
   activity_recognition ar(frame_length,sk_feature_num);
   ros::Rate rate(10.0);
   tf::TransformListener listener;
+  tf::StampedTransform transform;
+  vector<tf::StampedTransform> transform_v;      
 
-  /*  fstream fout;
-  fout.open(file_name, ios::app|ios::out);
-  if(!fout.is_open()){
-    cerr << "cannnot open file" << endl;
-    return false ;
-    }*/
 
-      tf::StampedTransform transform;
-      vector<tf::StampedTransform> transform_v;      
   
   while(ar.nh_.ok())
     {
@@ -175,8 +169,15 @@ int main(int argc, char** argv)
 		}
 	    }
 	  
+	  if(ar.current_frame < ar.frame_length-1)
+	    ar.current_frame++;
+	  if(ar.current_frame == ar.frame_length-1)
+	    ar.sk_data->slid_window(frame_length,sk_feature_num);
+	    
 	  ar.data_seq->setPrecomputedFeatures(ar.sk_data);
-	  cout<<"result "<<ar.toolbox->realtimeOutput(ar.data_seq)<<endl;
+	  
+	  
+	  //	  cout<<"result "<<ar.toolbox->realtimeOutput(ar.data_seq)<<endl;
 	  switch (ar.toolbox->realtimeOutput(ar.data_seq))
 		{
 		case 0:
@@ -200,17 +201,17 @@ int main(int argc, char** argv)
 		    {
 		     ar.result[i]=0;
 		    }
+		  listener.clear();
 		}
 		ar.counter++;
 	    
 	}
-      //      listener.clear();
+     
       transform_v.clear();
       rate.sleep();
 
     }
-
-return 0;
+ return 0;
 }
 
 

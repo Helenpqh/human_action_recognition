@@ -1,0 +1,48 @@
+
+Calculations per sequences:
+Label	True+	Marked+	Detect+	Prec.	Recall	F1
+0:	0	1	0	0	0	-nan
+1:	0	0	0	0	0	-nan
+2:	0	0	1	0	0	-nan
+-----------------------------------------------------------------------
+Ov:	0	1	1	0	0	-nan
+
+Calculations per sequences:
+Label	True+	Marked+	Detect+	Prec.	Recall	F1
+0:	0	1	0	0	0	-nan
+1:	0	0	0	0	0	-nan
+2:	0	0	1	0	0	-nan
+-----------------------------------------------------------------------
+Ov:	0	1	1	0	0	-nan
+
+Calculations per sequences:
+Label	True+	Marked+	Detect+	Prec.	Recall	F1
+0:	0	1	0	0	0	-nan
+1:	0	0	0	0	0	-nan
+2:	0	0	1	0	0	-nan
+-----------------------------------------------------------------------
+Ov:	0	1	1	0	0	-nan
+
+Calculations per sequences:
+Label	True+	Marked+	Detect+	Prec.	Recall	F1
+0:	0	1	0	0	0	-nan
+1:	0	0	0	0	0	-nan
+2:	0	0	1	0	0	-nan
+-----------------------------------------------------------------------
+Ov:	0	1	1	0	0	-nan
+
+Calculations per sequences:
+Label	True+	Marked+	Detect+	Prec.	Recall	F1
+0:	0	1	0	0	0	-nan
+1:	0	0	0	0	0	-nan
+2:	0	0	1	0	0	-nan
+-----------------------------------------------------------------------
+Ov:	0	1	1	0	0	-nan
+
+Calculations per sequences:
+Label	True+	Marked+	Detect+	Prec.	Recall	F1
+0:	0	1	0	0	0	-nan
+1:	0	0	1	0	0	-nan
+2:	0	0	0	0	0	-nan
+-----------------------------------------------------------------------
+Ov:	0	1	1	0	0	-nan
