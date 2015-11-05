@@ -11,8 +11,8 @@ using namespace std;
 
 string filenameModel = "model.txt";
 string filenameFeatures = "features.txt";
-string filenameOutput = "result.txt";
-string filenameStats = "stats.txt";
+//string filenameOutput = "result.txt";
+//string filenameStats = "stats.txt";
 
 class activity_recognition{
 public:
@@ -20,29 +20,32 @@ public:
   int frame_length;
   int sk_feature_num;
   int current_frame;  
-  int result[3];//number of labels;
+  vector<int> result;
+  int nblabel;
   int counter;
   dMatrix* sk_data;
   DataSequence* data_seq;
-  DataSet* data;// = new DataSet;
-  ToolboxHCRF* toolbox;
-  
-  
+  Toolbox* toolbox;
+  Model* pModel;
+  InferenceEngine* pInfEngine;
+
   activity_recognition(int frame_len,int sk_num)
     :frame_length(frame_len),sk_feature_num(sk_num),counter(0)
   {
-    for(int i=0; i<3; i++)
-      {
-	result[i]=0;
-      }
     current_frame = 0;    
-    //    sk_feature_num  = 24; //3*8 without head
     sk_data = new dMatrix(frame_length,sk_feature_num,0);
     data_seq = new DataSequence;
-    data = new DataSet;
     toolbox = new ToolboxHCRF(3,OPTIMIZER_BFGS,0);
     toolbox->load((char*)filenameModel.c_str(),(char*)filenameFeatures.c_str());
-  }
+    pModel=toolbox->getModel();
+    pInfEngine=toolbox->getInferenceEngine();
+    nblabel=pModel->getNumberOfSequenceLabels();
+    for(int i=0; i<nblabel; i++)
+	{
+	  result.push_back(0);
+	}
+    
+ }
 
   ~activity_recognition()
   {
@@ -50,10 +53,9 @@ public:
       {delete toolbox;
 	toolbox = NULL;
       }
-     if(data)
+     if(data_seq)
       {
-       	delete data;
-	data = NULL;
+       	delete data_seq;
 	data_seq = NULL;
 	sk_data = NULL;
       }
@@ -177,34 +179,23 @@ int main(int argc, char** argv)
 	  ar.data_seq->setPrecomputedFeatures(ar.sk_data);
 	  
 	  
-	  //	  cout<<"result "<<ar.toolbox->realtimeOutput(ar.data_seq)<<endl;
-	  switch (ar.toolbox->realtimeOutput(ar.data_seq))
-		{
-		case 0:
-		  ar.result[0]++;
-		  break;
-		case 1:
-		  ar.result[1]++;
-		  break;
-		case 2:
-		  ar.result[2]++;
-		  break;
-		default:
-		  break;
-		}	
+	  //cout<<"result "<<ar.toolbox->realtimeLabelOutput(ar.data_seq)<<endl;
+	  int label = ar.toolbox->realtimeLabelOutput(ar.data_seq);
+	  ar.result[label]++;
 	      if(ar.counter>=10)
 		{
 		 
 		  cout<<"working: "<<ar.result[0]<<" shake hand: "<<ar.result[1]<<" drinking: "<<ar.result[2]<<endl;
 		  ar.counter=0;
-		  for(int i=0; i<3; i++)
+		  for(int i=0; i<ar.nblabel; i++)
 		    {
 		     ar.result[i]=0;
 		    }
 		  listener.clear();
 		}
 		ar.counter++;
-	    
+	  
+
 	}
      
       transform_v.clear();
