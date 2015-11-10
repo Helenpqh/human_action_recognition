@@ -72,6 +72,9 @@ class Toolbox
    virtual void train(DataSet& X, bool bInitWeights = true);
    virtual double test(DataSet& X, char* filenameOutput = NULL,
                        char* filenameStats = NULL) = 0;
+   virtual int realtimeLabelOutput(DataSequence* X) = 0;
+   virtual dMatrix* realtimeScoreOutput(DataSequence* X)=0;
+   
    virtual void validate(DataSet& dataTrain, DataSet& dataValidate,
                          double& optimalRegularisation,
                          char* filenameStats = NULL);   
@@ -107,19 +110,21 @@ class Toolbox
    Model* getModel();
    FeatureGenerator* getFeatureGenerator();
    Optimizer* getOptimizer();
+   InferenceEngine* getInferenceEngine();
 
    void setRangeWeights(double minRange, double maxRange);
    void setMinRangeWeights(double minRange);
    void setMaxRangeWeights(double maxRange);
    double getMinRangeWeights();
    double getMaxRangeWeights();
-
+   
    void initWeights(DataSet &X);
 
    // To be able to set the number of thread using the toolbox
    // (usefull from python). To change the default scheduling, one
    // must use the environment variable OMP_SCHEDULE
    void set_num_threads(int);
+
 
   protected:
    virtual void init(int opt, int windowSize);
@@ -191,8 +196,8 @@ class ToolboxHCRF: public Toolbox
    virtual ~ToolboxHCRF();
    virtual double test(DataSet& X, char* filenameOutput = NULL,
                        char* filenameStats = NULL);   
-   virtual int realtimeOutput(DataSequence* X);
-                       
+   virtual int realtimeLabelOutput(DataSequence* X);
+   virtual dMatrix* realtimeScoreOutput(DataSequence* X);
   protected:
    virtual void initModel(DataSet &X);
    virtual void init(int nbHiddenStates, int opt, int windowSize);

@@ -143,7 +143,7 @@ class DataSet
 		container.insert(iter, d);
 	}
 	
-	void insert_one(DataSequence* d);
+
 
 	DataSequence* at (size_t i) const{
        return container.at(i);

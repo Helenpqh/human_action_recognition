@@ -176,7 +176,10 @@ int DataSequence::load(istream* isData, istream* isLabels, istream* isAdjMat, is
 	{
 		dMatrix* pNewMat = new dMatrix;
 		if(pNewMat->read(isData)==0)
-			precompFeatures = pNewMat;
+		  {
+		    pNewMat->transpose(); //if you are not using the original version,delete this 
+		    precompFeatures = pNewMat;
+		  }
 		else
 		{
 			delete pNewMat;
@@ -551,11 +554,7 @@ int DataSet::load(const char *fileData, const char *fileStateLabels,
 	return 0;
 }
 
-void DataSet::insert_one(DataSequence* d)
-{
-  
-  container.insert(container.end(),d);
-}
+
 
 int DataSet::searchNumberOfStates()
 {

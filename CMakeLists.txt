@@ -1,15 +1,18 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(human_action_recognition)
 #PUBLIC VERSION
-ADD_DEFINITIONS (-D_PUBLIC)
+ADD_DEFINITIONS(-D_PUBLIC)
+
 if(UNIX)
   ADD_DEFINITIONS(-DUNIX)
 endif()
+
+
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED roscpp std_msgs sensor_msgs tf)
-
+find_package(OpenCV REQUIRED)
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -116,16 +119,21 @@ catkin_package(
 # include_directories(include)
 
 ADD_SUBDIRECTORY(${PROJECT_SOURCE_DIR}/libs/shared/hCRF hCRF)
-INCLUDE_DIRECTORIES(${hCRF_SOURCE_DIR}/include)
+INCLUDE_DIRECTORIES(
+${hCRF_SOURCE_DIR}/include 
+)
+INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/include)
 
 LINK_DIRECTORIES(${hCRF_BINARY_DIR}/lib)
 
-add_executable(activity_rec src/activity_rec.cpp)
+add_executable(activity_rec src/activity_rec.cpp src/GraphUtils.cpp)
 Target_link_libraries(activity_rec ${catkin_LIBRARIES})
 TARGET_LINK_LIBRARIES(activity_rec  hCRF)
 TARGET_LINK_LIBRARIES(activity_rec  cgDescent)
 TARGET_LINK_LIBRARIES(activity_rec  lbfgs)
 TARGET_LINK_LIBRARIES(activity_rec  uncoptim)
+TARGET_LINK_LIBRARIES(activity_rec  ${OpenCV_LIBS})
+
 
 ## Declare a C++ library
 # add_library(ML_HCRF

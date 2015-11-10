@@ -600,6 +600,10 @@ Model* Toolbox::getModel()
 	return pModel;
 }
 
+InferenceEngine* Toolbox::getInferenceEngine()
+{
+  return pInferenceEngine;
+}
 FeatureGenerator* Toolbox::getFeatureGenerator()
 {
 	return pFeatureGenerator;

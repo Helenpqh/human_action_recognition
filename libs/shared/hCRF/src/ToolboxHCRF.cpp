@@ -38,12 +38,21 @@ void ToolboxHCRF::initModel(DataSet &X)
 	pFeatureGenerator->initFeatures(X,*pModel);
 }
 
-int ToolboxHCRF::realtimeOutput(DataSequence* X)
+int ToolboxHCRF::realtimeLabelOutput(DataSequence* X)
 {
   dMatrix* matProbabilities = new dMatrix;
   int labelDetected = pEvaluator->computeSequenceLabel(X,pModel,matProbabilities);
   return labelDetected;
 }
+
+dMatrix* ToolboxHCRF::realtimeScoreOutput(DataSequence* X)
+{
+  dMatrix* matProbabilities = new dMatrix;
+  int labelDetected = pEvaluator->computeSequenceLabel(X,pModel,matProbabilities);
+  return matProbabilities;
+
+}
+
 
 double ToolboxHCRF::test(DataSet& X, char* filenameOutput, char* filenameStats)
 {
