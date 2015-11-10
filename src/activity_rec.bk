@@ -24,8 +24,6 @@ public:
   int sk_feature_num;
   int current_frame;  
   vector<float> result;
-  vector<vector<float> > visual_result;
-  vector<string> label_name;
   int nblabel;
   int counter;
   dMatrix* sk_data;
@@ -33,7 +31,7 @@ public:
   Toolbox* toolbox;
   Model* pModel;
   InferenceEngine* pInfEngine;
-
+  
 
   activity_recognition(int frame_len,int sk_num)
     :frame_length(frame_len),sk_feature_num(sk_num),counter(0)
@@ -49,12 +47,7 @@ public:
     for(int i=0; i<nblabel; i++)
 	{
 	  result.push_back(0);
-	  vector<float> vec;
-	  visual_result.push_back(vec);
 	}
-    string label[3]={"working","shake hand","drinking"};
-    label_name.assign(label, label+3);
-
     action_result_pub=nh_.advertise<std_msgs::String>("query_result",1);
  }
 
@@ -195,7 +188,7 @@ int main(int argc, char** argv)
 	  stringstream ss;
 	  std_msgs::String action_result;
 	  //ar.result[label]++;
-	 
+	  //-------------------------------------------//
 	  dMatrix* score;
 	  int score_sum=0;
 	  score = ar.toolbox->realtimeScoreOutput(ar.data_seq);
@@ -204,39 +197,8 @@ int main(int argc, char** argv)
 	      ar.result[i] += score->getValue(i,0);	      
 	    }
 	  
-	  //----------------------------------
-	  int lowest_score = ar.result[0];
-		  for(int i=1; i<ar.nblabel; i++)
-		    {
-		      if(ar.result[i] <= lowest_score)
-			lowest_score = ar.result[i];		      
-		    }
-		  for(int i=0; i<ar.nblabel; i++)
-		    {
-		      ar.result[i] -= lowest_score;
-		      score_sum += ar.result[i]; 
-		    }
-		  for(int i=0; i<ar.nblabel; i++)
-		    {
-		      ar.result[i] = ar.result[i]/score_sum;
-		      if(ar.visual_result[i].size()>=frame_length)
-			ar.visual_result[i].erase(ar.visual_result[i].begin());
-		      ar.visual_result[i].push_back(ar.result[i]);
-		    
-		    }
-		  
-		  IplImage* graph=drawFloatGraph(&ar.visual_result[0][0], ar.visual_result[0].size(),NULL, 0, 1, 400, 200, ar.label_name[0].c_str());
-		  if(ar.visual_result[0].size()>=frame_length)
-		    {
-		      for(int i=1; i<ar.nblabel; i++)
-			drawFloatGraph(&ar.visual_result[i][0], ar.visual_result[i].size() ,graph, 0, 1, 400, 200, ar.label_name[i].c_str());
-		      showImage(graph,10);
-		      setGraphColor(0);
-		    }
-		      
-		  listener.clear();
-		  //----------------------------
-	  /*if(ar.counter>=3)
+	  //------------------------------------------//
+	   if(ar.counter>=10)
 		{
 		  int lowest_score = ar.result[0];
 		  for(int i=1; i<ar.nblabel; i++)
@@ -252,35 +214,30 @@ int main(int argc, char** argv)
 		  for(int i=0; i<ar.nblabel; i++)
 		    {
 		      ar.result[i] = ar.result[i]/score_sum;
-		      if(ar.visual_result[i].size()>=50)
-			ar.visual_result[i].erase(ar.visual_result[i].begin());
-		      ar.visual_result[i].push_back(ar.result[i]);
 		    }
-	
-		  IplImage* graph=drawFloatGraph(&ar.visual_result[0][0], ar.visual_result[0].size(),NULL, 0, 1, 400,200);
-		  for(int i=1; i<ar.nblabel; i++)
-		    drawFloatGraph(&ar.visual_result[i][0], ar.visual_result[i].size() ,graph, 0, 1, 600,200);
-
-		  showImage(graph,10);
+		  
 		  ss<<"working: "<<ar.result[0]<<" shake hand: "<<ar.result[1]<<" drinking: "<<ar.result[2]<<endl;
 		  cout<<ss.str()<<endl;
 		  ar.counter=0;
 		  score_sum=0;
 		  action_result.data=ss.str();
 		  ar.action_result_pub.publish(action_result); //pub the result to euslisp to excute is enough
-		  std::fill(ar.result.begin(), ar.result.end(), 0);//clear the vector without change its init
-		  
+		 
+		  for(int i=0; i<ar.nblabel; i++)
+		    {
+		     ar.result[i]=0;
+		    }
 		  listener.clear();
 		  
 		}
-	   ar.counter++;*/
+	   ar.counter++;
 	  
 
 	}
       /*      vector<float> test;
-      for(float i=0.1; i<1; i=i+0.1)
+      for(int i=0; i< 20; i++)
 	test.push_back(i);
-      IplImage* graph=drawFloatGraph(&test[0], test.size(), NULL, 0, 1, 400,180) ;
+      IplImage* graph=drawFloatGraph(&test[0], test.size(), NULL, 0, 20, 400,180) ;
       showImage(graph,0);*/
       transform_v.clear();
       rate.sleep();
