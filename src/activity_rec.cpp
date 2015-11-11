@@ -196,7 +196,7 @@ int main(int argc, char** argv)
 	  for(int i=0; i<ar.nblabel; i++)
 	    {
 	      ar.result[i] += score->getValue(i,0);	      
-	      cout<<ar.result[i]<<endl;
+	 
 	    }
 	  
 	  //----------------------------------
