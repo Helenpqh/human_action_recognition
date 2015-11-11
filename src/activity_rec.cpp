@@ -128,18 +128,19 @@ int main(int argc, char** argv)
   tf::TransformListener listener;
   tf::StampedTransform transform;
   vector<tf::StampedTransform> transform_v; 
- 
+  bool new_msg_flat=false;
+  transform_v.resize(9);
   string frame_name[9]={"/head_1","/neck_1","/torso_1","/left_shoulder_1","/left_elbow_1","/left_hand_1","/right_shoulder_1","/right_elbow_1","/right_hand_1"};
 
   while(ar.nh_.ok())
     {
       try{
 	for(int i=0 ; i<9; i++){
-	 
 	  listener.lookupTransform("/openni_depth_frame", frame_name[i] ,ros::Time(0) ,transform);
 
-	  transform_v.push_back(transform);
+	  transform_v[i]=transform;
 	}	
+	new_msg_flat=true;
       }
       catch (tf::TransformException ex)
         {
@@ -147,7 +148,7 @@ int main(int argc, char** argv)
           ros::Duration(1.0).sleep();
         }
 
-       if(!transform_v.empty())
+      if(new_msg_flat==true)
 	{
 	
 	  vector<double> d_l = ar.v_sub(transform_v[5],transform_v[4]);
@@ -195,7 +196,7 @@ int main(int argc, char** argv)
 	  for(int i=0; i<ar.nblabel; i++)
 	    {
 	      ar.result[i] += score->getValue(i,0);	      
-	       
+	      cout<<ar.result[i]<<endl;
 	    }
 	  
 	  //----------------------------------
@@ -240,8 +241,7 @@ int main(int argc, char** argv)
 		  listener.clear();
 		  
 	}
-
-        transform_v.clear();      
+      new_msg_flat=false;
       rate.sleep();
 
     }
