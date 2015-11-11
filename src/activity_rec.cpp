@@ -51,12 +51,8 @@ public:
     pModel=toolbox->getModel();
     pInfEngine=toolbox->getInferenceEngine();
     nblabel=pModel->getNumberOfSequenceLabels();
-    for(int i=0; i<nblabel; i++)
-	{
-	  result.push_back(0);
-	  vector<float> vec;
-	  visual_result.push_back(vec);
-	}
+    result.resize(nblabel);
+    visual_result.resize(nblabel);
     string label[4]={"working","shake hand","drinking","11"};
     label_name.assign(label, label+4);
 
@@ -140,6 +136,7 @@ int main(int argc, char** argv)
 
 	  transform_v[i]=transform;
 	}	
+
 	new_msg_flat=true;
       }
       catch (tf::TransformException ex)
@@ -198,7 +195,7 @@ int main(int argc, char** argv)
 	      ar.result[i] += score->getValue(i,0);	      
 	 
 	    }
-	  
+	  human_action_recognition::activityRecognition ar_msg;
 	  //----------------------------------
 	  int lowest_score = ar.result[0];
 		  for(int i=1; i<ar.nblabel; i++)
@@ -221,7 +218,25 @@ int main(int argc, char** argv)
 			  ar.visual_result[i][frame_length-3]=ar.gaussian_smooth(ar.visual_result[i]);
 			  if(ar.gaussian_smooth(ar.visual_result[i]) > 0.8)
 			    {
-			      cout<<"going to pub"<<endl;
+			      ar_msg.label=ar.label_name[i];
+			      if(ar.label_name[i]=="shake hand")
+				{
+				  vector<float> interactionArea;
+				  if(transform_v[5].getOrigin().z()<transform_v[8].getOrigin().z())
+				    {
+				      interactionArea.push_back(transform_v[5].getOrigin().x());
+				      interactionArea.push_back(transform_v[5].getOrigin().y());
+				      interactionArea.push_back(transform_v[5].getOrigin().z());
+				    }
+				  else
+				    {
+				      interactionArea.push_back(transform_v[8].getOrigin().x());
+				      interactionArea.push_back(transform_v[8].getOrigin().y());
+				      interactionArea.push_back(transform_v[8].getOrigin().z());
+				    }
+				  ar_msg.interactionArea=interactionArea;
+				}
+			      ar.action_result_pub.publish(ar_msg);
 			    }
 			}
 			  
@@ -229,11 +244,11 @@ int main(int argc, char** argv)
 		      		
 		    }
 		  
-		  IplImage* graph=drawFloatGraph(&ar.visual_result[0][0], ar.visual_result[0].size(),NULL, 0, 1, 400, 200, ar.label_name[0].c_str());
+		  IplImage* graph=drawFloatGraph(&ar.visual_result[0][0], ar.visual_result[0].size()-2,NULL, 0, 1, 400, 200, ar.label_name[0].c_str());
 		  if(ar.visual_result[0].size()>=frame_length)
 		    {
 		      for(int i=1; i<ar.nblabel; i++)
-			drawFloatGraph(&ar.visual_result[i][0], ar.visual_result[i].size()-2 ,graph, 0, 1, 400, 200, ar.label_name[i].c_str());//output the graph have been smoothed
+			drawFloatGraph(&ar.visual_result[i][0], ar.visual_result[i].size()-2 ,graph, 0, 1, 400, 200, ar.label_name[i].c_str());//output the graph have been smoothed thus -2
 		      showImage(graph,10);
 		      setGraphColor(0);
 		    }

@@ -1,2 +1,2 @@
-uint8 label_id
+string label
 float32[] interactionArea
