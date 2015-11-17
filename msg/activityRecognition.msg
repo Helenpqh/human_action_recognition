@@ -1,2 +1,2 @@
 string label
-float32[] interactionArea
+geometry_msgs/Point interactionPoint

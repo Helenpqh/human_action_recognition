@@ -15,9 +15,10 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   message_generation
   std_msgs 
+  geometry_msgs
   sensor_msgs 
   tf)
-find_package(OpenCV)
+find_package(OpenCV REQUIRED)
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -75,6 +76,7 @@ add_message_files(
 ## Generate added messages and services with any dependencies listed here
 generate_messages(
   DEPENDENCIES
+  geometry_msgs
   std_msgs  # Or other packages containing msgs
   )
 

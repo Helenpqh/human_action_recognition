@@ -1,6 +1,7 @@
 #include <ros/ros.h>
 #include <tf/transform_listener.h>
 #include <geometry_msgs/Twist.h>
+#include <geometry_msgs/Point.h>
 #include <vector>
 #include <fstream>
 #include "hCRF.h"
@@ -53,10 +54,10 @@ public:
     nblabel=pModel->getNumberOfSequenceLabels();
     result.resize(nblabel);
     visual_result.resize(nblabel);
-    string label[4]={"working","shake hand","drinking","11"};
+    string label[4]={"drinking","shake hand","wave hand","natural"};
     label_name.assign(label, label+4);
 
-    action_result_pub=nh_.advertise<human_action_recognition::activityRecognition>("query_result",1);
+    action_result_pub=nh_.advertise<human_action_recognition::activityRecognition>("human_action_rec_result",1);
  }
 
   ~activity_recognition()
@@ -116,8 +117,8 @@ public:
 
 int main(int argc, char** argv)
 {
-  int sk_feature_num = 24;
-  int frame_length = 50;
+  int sk_feature_num = 27;
+  int frame_length = 30;
   ros::init(argc, argv, "pose_descriptor_extractor");
   activity_recognition ar(frame_length,sk_feature_num);
   ros::Rate rate(10.0);
@@ -132,7 +133,7 @@ int main(int argc, char** argv)
     {
       try{
 	for(int i=0 ; i<9; i++){
-	  listener.lookupTransform("/openni_depth_frame", frame_name[i] ,ros::Time(0) ,transform);
+	  listener.lookupTransform("/head_mount_kinect_ir_link", frame_name[i] ,ros::Time(0) ,transform);
 
 	  transform_v[i]=transform;
 	}	
@@ -152,12 +153,12 @@ int main(int argc, char** argv)
 	  vector<double> d_r = ar.v_sub(transform_v[8],transform_v[7]);      
 	  double ref_dis=max(ar.v_norm(d_l), ar.v_norm(d_r)); //use the ||left/right hand - elbow|| as reference distance
 	  // cout<<"distance"<<ref_dis<<endl;
-	  vector<vector<double> > p(transform_v.size()-1);
+	  vector<vector<double> > p(transform_v.size());
 	
-	  for(int i=0; i<transform_v.size()-1; i++)
+	  for(int i=0; i<transform_v.size(); i++)
 	    {
 
-	      vector<double> temp=(ar.v_sub(transform_v[i+1],transform_v[0])); // every joint relative to head
+	      vector<double> temp=(ar.v_sub(transform_v[i],transform_v[2])); // every joint relative to head
 	      for(int j=0; j<temp.size(); j++)
 		{
 		  p[i].push_back(temp[j]/ref_dis);
@@ -216,25 +217,26 @@ int main(int argc, char** argv)
 			{
 			  ar.visual_result[i].erase(ar.visual_result[i].begin());
 			  ar.visual_result[i][frame_length-3]=ar.gaussian_smooth(ar.visual_result[i]);
-			  if(ar.gaussian_smooth(ar.visual_result[i]) > 0.8)
+			  if(ar.gaussian_smooth(ar.visual_result[i]) > 0.75)
 			    {
+                              cout<<"gonna pub"<<ar.label_name[i]<<endl;
 			      ar_msg.label=ar.label_name[i];
 			      if(ar.label_name[i]=="shake hand")
 				{
-				  vector<float> interactionArea;
-				  if(transform_v[5].getOrigin().z()<transform_v[8].getOrigin().z())
+                                  geometry_msgs::Point interactionPoint;
+				  if(transform_v[5].getOrigin().z()>transform_v[8].getOrigin().z())
 				    {
-				      interactionArea.push_back(transform_v[5].getOrigin().x());
-				      interactionArea.push_back(transform_v[5].getOrigin().y());
-				      interactionArea.push_back(transform_v[5].getOrigin().z());
+				      interactionPoint.x = transform_v[5].getOrigin().x();
+				      interactionPoint.y = transform_v[5].getOrigin().y();
+				      interactionPoint.z = transform_v[5].getOrigin().z();
 				    }
 				  else
 				    {
-				      interactionArea.push_back(transform_v[8].getOrigin().x());
-				      interactionArea.push_back(transform_v[8].getOrigin().y());
-				      interactionArea.push_back(transform_v[8].getOrigin().z());
+				      interactionPoint.x = transform_v[8].getOrigin().x();
+				      interactionPoint.y = transform_v[8].getOrigin().y();
+				      interactionPoint.z = transform_v[8].getOrigin().z();
 				    }
-				  ar_msg.interactionArea=interactionArea;
+				  ar_msg.interactionPoint=interactionPoint;
 				}
 			      ar.action_result_pub.publish(ar_msg);
 			    }
@@ -253,7 +255,7 @@ int main(int argc, char** argv)
 		      setGraphColor(0);
 		    }
 	  	      
-		  listener.clear();
+                  // listener.clear();
 		  
 	}
       new_msg_flat=false;
