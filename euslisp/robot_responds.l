@@ -39,8 +39,13 @@
                       ))
           (setq trs (send (send trans-base :copy-worldcoords)
                           :translate  (ros::tf-point->pos coordinate)))
-          (setq *cor* trs)
-          (print coordinate))
+          (send trs :draw-on :flush t :size 500 :color #f(1 1 0)))
+         ; (setq ll (send *pr2* :link-list (send *pr2* :rarm :end-coords :parent)))
+         ; (setq mt (send *pr2* :rarm :end-coords))
+         ; (send *pr2* :inverse-kinematcs trs
+         ;       :move-target mt
+         ;       :link-list ll))
          (t ))
-        (setq label nil)))    
+        ;;(setq label nil)
+        ))    
     ))

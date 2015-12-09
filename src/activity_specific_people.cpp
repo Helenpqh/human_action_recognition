@@ -261,12 +261,12 @@ int main(int argc, char** argv)
             cout<<"x "<<transform.getOrigin().x()<<endl;
             cout<<"y "<<transform.getOrigin().y()<<endl;
             cout<<"z "<<transform.getOrigin().z()<<endl;
-            if((transform.getOrigin().x() <= ar.specific_people_pos.x+10)&&(transform.getOrigin().x() >= ar.specific_people_pos.x-10))
+            if((transform.getOrigin().x() <= ar.specific_people_pos.x+0.1)&&(transform.getOrigin().x() >= ar.specific_people_pos.x-0.1))
               {
-                if((transform.getOrigin().z() <= ar.specific_people_pos.y+10)&&(transform.getOrigin().z() >= ar.specific_people_pos.y-10))
+                if((transform.getOrigin().z() <= ar.specific_people_pos.y+0.1)&&(transform.getOrigin().z() >= ar.specific_people_pos.y-0.1))
                   //they are using different coordinate here rotate 90 degree about the x axis
                   {
-                    if((transform.getOrigin().y() <= -ar.specific_people_pos.z+10)&&(transform.getOrigin().y() >= -ar.specific_people_pos.z-10))
+                    if((transform.getOrigin().y() <= -ar.specific_people_pos.z+0.1)&&(transform.getOrigin().y() >= -ar.specific_people_pos.z-0.1))
                     found_user_flag = true;
                     if(joint_plus_user.empty()){
                       for(int i = 0; i < 9; i++)

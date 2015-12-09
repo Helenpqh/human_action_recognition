@@ -14,11 +14,29 @@ endif()
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   message_generation
-  std_msgs 
+  std_msgs
+  std_srvs
+  actionlib
+  sensor_msgs
+  actionlib_msgs
   geometry_msgs
-  sensor_msgs 
-  tf)
+  stereo_msgs
+  image_transport
+  image_geometry
+  image_view
+  tf
+  nodelet
+  dynamic_reconfigure
+  pcl_ros
+  cv_bridge
+  cob_image_flip
+  cob_vision_utils
+  cob_perception_msgs
+)
 find_package(OpenCV REQUIRED)
+include_directories(
+  ${catkin_INCLUDE_DIRS}
+)
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -140,6 +158,23 @@ TARGET_LINK_LIBRARIES(activity_rec  lbfgs)
 TARGET_LINK_LIBRARIES(activity_rec  uncoptim)
 TARGET_LINK_LIBRARIES(activity_rec  ${OpenCV_LIBS})
 
+
+add_executable(activity_rec_dis src/activity_rec_dis.cpp src/GraphUtils.cpp)
+Target_link_libraries(activity_rec_dis ${catkin_LIBRARIES})
+TARGET_LINK_LIBRARIES(activity_rec_dis  hCRF)
+TARGET_LINK_LIBRARIES(activity_rec_dis  cgDescent)
+TARGET_LINK_LIBRARIES(activity_rec_dis  lbfgs)
+TARGET_LINK_LIBRARIES(activity_rec_dis  uncoptim)
+TARGET_LINK_LIBRARIES(activity_rec_dis  ${OpenCV_LIBS})
+
+add_executable(activity_specific_people src/activity_specific_people.cpp src/GraphUtils.cpp)
+Target_link_libraries(activity_specific_people ${catkin_LIBRARIES})
+TARGET_LINK_LIBRARIES(activity_specific_people  hCRF)
+TARGET_LINK_LIBRARIES(activity_specific_people  cgDescent)
+TARGET_LINK_LIBRARIES(activity_specific_people  lbfgs)
+TARGET_LINK_LIBRARIES(activity_specific_people  uncoptim)
+TARGET_LINK_LIBRARIES(activity_specific_people  ${OpenCV_LIBS})
+TARGET_LINK_LIBRARIES(activity_specific_people  ${Boost_LIBRARIES})
 
 ## Declare a C++ library
 # add_library(ML_HCRF
